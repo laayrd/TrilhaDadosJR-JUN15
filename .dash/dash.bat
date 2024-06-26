@@ -1,0 +1,1 @@
+streamlit run C:\Users\layss\OneDrive\Cursos\Desafio-Data-Science\.dash\dashboard.py
