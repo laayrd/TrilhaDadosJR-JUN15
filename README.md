@@ -45,7 +45,7 @@ O código principal do aplicativo está no arquivo `dashboard.py`. Aqui está um
     ```
 - **Carregamento dos dados**: Lê os dados do arquivo CSV.
     ```python
-    df = pd.read_csv(r"C:\Users\layss\OneDrive\Cursos\Desafio-Data-Science\dados.csv", sep=",")
+    df = pd.read_csv(r".dash/dados.csv", sep=",")
     ```
 - **Cálculo do total de vendas**: Adiciona uma coluna com o total de vendas em R$.
     ```python
@@ -56,7 +56,7 @@ O código principal do aplicativo está no arquivo `dashboard.py`. Aqui está um
     col1, col2, col3 = st.columns(3)
     col4, col5 = st.columns(2)
     ```
-- **Métricas e estatísticas**: Calcula e exibe o valor total da receita, a quantidade total vendida, e as estatísticas descritivas.
+- **Métricas e estatísticas**: Calcula e exibe o valor total da receita e a quantidade total vendida.
     ```python
     total_receita = df["Total R$"].sum()
     st.metric(label="Valor Total da Receita", value=f"R${total_receita:,.2f}")
@@ -64,11 +64,46 @@ O código principal do aplicativo está no arquivo `dashboard.py`. Aqui está um
     quant_total = df["Quantidade de Vendas"].sum()
     st.metric(label="Quantidade Total Vendido", value=f"{quant_total}")
     ```
-- **Gráficos**: Cria gráficos para visualização das vendas por curso e por dia.
+- **Estatísticas**: Calcula e filtra as as estatísticas descritivas e calculo do curso mais vendido.
     ```python
+    filtro_estatisticas = ["mean", "std", "min", "50%", "max"]
+    df_estatisticas = df[["Quantidade de Vendas", "Preço Unitário", "Total R$"]].describe().loc[filtro_estatisticas]
+    df_estatisticas = df_estatisticas.rename(index={"mean": "Média", "std": "Desvio Padrão", "min": "Mínimo", "50%": "Mediana", "max": "Máximo"})
+    
+    st.subheader("Estatísticas")
+    st.write(df_estatisticas)
+
+    vendas_por_curso = df.groupby("Nome do Curso")["Quantidade de Vendas"].sum()
+    id_mais_vendido = vendas_por_curso.idxmax()
+    qntd_mais_vendido = vendas_por_curso.max()
+    st.markdown(f"<h3 style='font-size: 20px;'>Curso Mais Vendido: {id_mais_vendido} com {qntd_mais_vendido} vendas</h3>", unsafe_allow_html=True)
+    ```
+- **Gráficos**: Cria gráficos para visualização das vendas por curso, vendas por dia e quantidade por dia, respectivamente.
+    ```python
+    top5_cursos = df.groupby("Nome do Curso")["Quantidade de Vendas"].sum().nlargest(5).reset_index()
+    outros_cursos = df.groupby("Nome do Curso")["Quantidade de Vendas"].sum().nsmallest(df["Nome do Curso"].nunique() - 5).sum()
+    top5_cursos.loc[len(top5_cursos)] = ["Outros", outros_cursos]
     fig2, ax = plt.subplots()
     ax.pie(top5_cursos["Quantidade de Vendas"], labels=top5_cursos["Nome do Curso"], colors=["pink", "magenta", "mediumpurple", "cyan", "deepskyblue", "blue"])
+    ax.axis("equal")
+    ax.set_title("Vendas por Curso")
     col3.pyplot(fig2, use_container_width=True)
+
+    fig1, ax = plt.subplots(figsize=(15, 5))
+    df.plot(kind="bar", x="Data", y="Total R$", ax=ax, color="royalblue")
+    ax.set_xlabel("Data")
+    ax.set_ylabel("Total R$")
+    ax.set_title("Vendas por Dia R$")
+    col4.pyplot(fig1, use_container_width=True)
+
+    fig01, ax = plt.subplots(figsize=(11.5, 5))
+    sea.scatterplot(data=df, x="Data", y="Quantidade de Vendas", color="royalblue")
+    plt.xlabel("Data")
+    plt.ylabel("Quantidade de Vendas")
+    plt.title("Quantidade Total de Vendas por Dia")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    st.pyplot(plt.gcf(), use_container_width=True)
     ```
 ## Contribuição
 Contribuições são bem-vindas! Por favor, abra uma issue para discutir o que você gostaria de mudar ou melhorar.
