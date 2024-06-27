@@ -10,7 +10,7 @@ st.set_page_config(page_title="Dashboard de Vendas", layout="wide")
 st.title("Dashboard de Vendas por Curso")
 
 #carrega os dados
-df = pd.read_csv(r"C:\Users\layss\OneDrive\Cursos\Desafio-Data-Science\dados.csv", sep=",")
+df = pd.read_csv(r".dash/dados.csv", sep=",")
 
 #realiza o calculo do total de vendas em R$ adiciona a coluna na tabela
 df["Total R$"] = df["Quantidade de Vendas"] * df ["Preço Unitário"]
