@@ -1,5 +1,6 @@
 # Dashboard de Vendas Por Curso
 Este projeto é um dashboard interativo desenvolvido com Streamlit para visualizar e analisar as vendas de cursos.
+Disponivel para vizualização em ('https://laayrd-desafiods--dashdashboard-upfa7x.streamlit.app/')
 
 ## Visão Geral
 O dashboard permite visualizar:
